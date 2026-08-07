@@ -7,6 +7,29 @@ then tightens spacing across the panel. Card grids that show a handful of values
 compact tables. The result is closer to a network-appliance console than to a
 consumer dashboard: more information per screen, less chrome.
 
+![Console](https://raw.githubusercontent.com/WisdomIT/pelican-hairline/main/screenshots/console.png)
+
+<details>
+<summary><b>More screenshots</b></summary>
+
+**Server list** — status as a text badge, resource bars thinned down
+
+![Server list](https://raw.githubusercontent.com/WisdomIT/pelican-hairline/main/screenshots/server-list.png)
+
+**Files** — ~35px rows instead of ~56px, action icons unified
+
+![Files](https://raw.githubusercontent.com/WisdomIT/pelican-hairline/main/screenshots/files.png)
+
+**Startup** — server variables as label/value rows instead of a grid of cards
+
+![Startup](https://raw.githubusercontent.com/WisdomIT/pelican-hairline/main/screenshots/startup.png)
+
+**Admin** — the theme covers the admin panel too
+
+![Admin eggs](https://raw.githubusercontent.com/WisdomIT/pelican-hairline/main/screenshots/admin-eggs.png)
+
+</details>
+
 ---
 
 ## What is Pelican Panel?
