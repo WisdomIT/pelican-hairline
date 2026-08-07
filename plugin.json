@@ -18,5 +18,5 @@
         "status_message": null
     },
     "class": "HairlinePlugin",
-    "update_url": ""
+    "update_url": "https://raw.githubusercontent.com/WisdomIT/pelican-hairline/main/update.json"
 }
