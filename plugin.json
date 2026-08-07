@@ -1,0 +1,22 @@
+{
+    "id": "hairline-theme",
+    "name": "Hairline",
+    "author": "WisdomIT",
+    "description": "Shadowless, hairline-bordered, high-density theme for Pelican.",
+    "version": "0.1.0",
+    "panels": [
+        "admin",
+        "app",
+        "server"
+    ],
+    "category": "theme",
+    "url": "https://github.com/WisdomIT/pelican-hairline",
+    "namespace": "WisdomIT\\Hairline",
+    "panel_version": "^1.0.0-beta35",
+    "meta": {
+        "status": "enabled",
+        "status_message": null
+    },
+    "class": "HairlinePlugin",
+    "update_url": ""
+}

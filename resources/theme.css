@@ -1,0 +1,957 @@
+/* 폰트가 인상의 절반이다. 패널은 이미 'Inter Variable'(라틴)을 싣고 있지만 **한글 글리프가
+   없어** 시스템 폰트로 폴백된다(실측 — UI 대부분이 한글이라 "Inter 안 먹힌" 인상의 정체).
+   한국어 UI 의 Inter 등가물인 Pretendard Variable 을 1순위로 얹는다 — 라틴 메트릭도
+   Inter 계열이라 숫자·영문 인상이 함께 잡힌다.
+   ⚠ @import 는 스타일시트 최상단에서만 동작한다. */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+
+/* ── Hairline 테마 v2 (#61) ──────────────────────────────────────
+   라이트 퍼스트 + 전면 밀도 패스. 팔레트(색)는 프로바이더가 재등록하고, 여기서는
+   레이아웃·밀도·표면을 다룬다. ⚠ fi-* 마크업 의존 — 패널 업그레이드 때 확인. */
+
+/* ═══ 1. 타이포·밀도 기준: 13px 기반, 촘촘하게 ═══ */
+/* ⚠ Filament 자체 <style> 이 우리 뒤에 실려 같은 특이도면 진다 — !important 로 못박고,
+   자식은 inherit 로 따라오게 한다(코드·모노스페이스는 제외). */
+body, .fi-body {
+    font-family: 'Pretendard Variable', Pretendard, 'Inter Variable', 'Inter',
+        ui-sans-serif, system-ui, -apple-system, sans-serif !important;
+    font-size: 13px;
+    letter-spacing: -0.008em;
+}
+.fi-body :where(*):not(code):not(pre):not(kbd):not(samp):not(.hl-mono) {
+    font-family: inherit;
+}
+.fi-page-header-heading { font-size: 1.125rem; font-weight: 600; }
+.fi-section-header-heading { font-size: 0.8125rem; font-weight: 600; }
+.fi-btn { font-size: 0.8125rem; padding-block: 0.35rem; }
+.fi-input, .fi-select-input { font-size: 0.8125rem; }
+.fi-badge { font-size: 0.6875rem; }
+
+/* 페이지·섹션 여백 절반으로 — "오밀조밀" */
+.fi-page-content, .fi-page > section { gap: 0.75rem; }
+.fi-section-content { padding: 0.75rem 1rem; }
+.fi-section-header { padding: 0.625rem 1rem; }
+/* ⚠ .fi-ta-cell 은 원래 padding:0 이다 — 여기를 줄여봐야 행은 1px 도 안 낮아진다.
+   실제 세로 여백은 §17 에서 다룬다(셀이 아니라 안쪽 .fi-ta-text 가 갖고 있다). */
+.fi-ta-header-cell { padding-block: 0.45rem; }
+.fi-wi-stats-overview { gap: 0.5rem; }
+.fi-main { padding-block: 1rem; }
+
+/* ═══ 2. 표면: 그림자 전면 제거, 1px 헤어라인 보더 ═══ */
+.fi-section, .fi-ta-ctn, .fi-wi-stats-overview-stat, .fi-dropdown-panel, .fi-modal-window {
+    border-radius: 6px;
+    box-shadow: none;
+    border: 1px solid #dfe2e7;                            /* gray-200 */
+}
+/* 🔴 코어는 버튼의 경계를 **ring**(--tw-ring-shadow, gray-950 10%)으로 그린다. 그림자를
+   없애려고 box-shadow:none 을 준 순간 그 경계까지 같이 사라졌다 — 흰 배경 위의 흰
+   버튼이 어디까지인지 안 보이던 원인이다. 진짜 보더로 되살린다.
+   색과 무관하게 **모든 버튼**에 준다(요청): 채운 버튼에는 살짝 어두운 가장자리로,
+   흰 버튼에는 옅은 회색 테두리로 읽힌다. */
+.fi-btn {
+    border-radius: 4px;
+    box-shadow: none;
+    border: 1px solid rgba(27, 30, 36, 0.12);
+    font-weight: 500;
+}
+:where(.dark) .fi-btn { border-color: rgba(255, 255, 255, 0.16); }
+.fi-input, .fi-select-input, .fi-input-wrp { border-radius: 4px; }
+.fi-badge { border-radius: 4px; }
+
+/* 콘텐츠 배경은 아주 옅은 회색 — 흰 카드가 보더만으로 떠 보이게 */
+.fi-body { background-color: #F8F9FA; }
+.fi-main { background-color: transparent; }
+
+/* ═══ 3. 사이드바: 흰 배경 + 보더 (라이트) ═══ */
+.fi-sidebar {
+    background-color: #ffffff;
+    border-inline-end: 1px solid #dfe2e7;
+    box-shadow: none;
+}
+.fi-sidebar-header { background-color: #ffffff; box-shadow: none; border-bottom: 1px solid #eef0f3; }
+/* 🔴 코어 클래스는 `fi-sidebar-item-btn` 이다 — `-button` 으로 썼던 규칙들은 **한 줄도
+   적용되지 않았다**(vendor blade `components/sidebar/item.blade.php:54` 에서 확인).
+   아이콘·활성 색도 코어가 더 구체적인 선택자(`.fi-active > .fi-...-btn > .fi-icon`)로
+   잡고 있어서, 같은 깊이로 맞춰야 뒤에 실리는 우리 규칙이 이긴다. */
+.fi-sidebar-item-btn { padding-block: 0.4rem; border-radius: 4px; column-gap: 0.6rem; }
+.fi-sidebar-item-label { font-size: 0.8125rem; }
+.fi-sidebar-item-btn > .fi-sidebar-item-icon { width: 1.1rem; height: 1.1rem; }
+.fi-sidebar-item.fi-sidebar-item-has-url > .fi-sidebar-item-btn:hover { background-color: #F3F4F6; }
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn { background-color: rgba(0, 111, 255, 0.08); }
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-sidebar-item-icon,
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-sidebar-item-label { color: #005ce6; }
+.fi-sidebar-group-label {
+    text-transform: uppercase;
+    font-size: 0.6563rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: #9ba1aa;
+}
+/* 관리자 패널만 내비게이션 **그룹**(Server·User·Advanced)을 쓴다 — 서버 패널은 그룹이
+   없어 이 마크업이 아예 안 나온다(실측: .fi-sidebar-group-btn 관리자 3 / 서버 0).
+   그래서 위의 항목 규칙만으로는 관리자 쪽만 헐거워 보였다. 코어 기본값은
+     .fi-sidebar-group-btn   { padding: 8px; column-gap: 12px }
+     .fi-sidebar-nav-groups  { row-gap: 28px }
+     .fi-sidebar-group / -items { row-gap: 4px }
+   머리글을 항목과 같은 리듬으로 낮추고, 그룹 사이는 구분은 되되 과하지 않게 줄인다.
+   이 선택자들은 관리자에만 존재하므로 유저 대시보드에는 영향이 없다. */
+.fi-sidebar-group-btn { padding-block: 0.4rem; column-gap: 0.6rem; }
+.fi-sidebar-nav-groups { row-gap: 1.1rem; }
+.fi-sidebar-group, .fi-sidebar-group-items { row-gap: 0.15rem; }
+
+/* ═══ 4. 톱바: 흰색 + 헤어라인 ═══ */
+.fi-topbar > nav, .fi-topbar {
+    background-color: #ffffff;
+    border-bottom: 1px solid #dfe2e7;
+    box-shadow: none;
+    min-height: 3rem;
+}
+
+/* ═══ 5. 테이블: 밀도 ═══ */
+.fi-ta-header-cell {
+    text-transform: uppercase;
+    font-size: 0.6563rem;
+    letter-spacing: 0.06em;
+    color: #7c828c;
+}
+.fi-ta-row:hover { background-color: #f7f9fc; }
+.fi-ta-row > td { font-size: 0.8125rem; }
+
+/* ═══ 6. 콘솔 상단: 코어 스탯 카드 숨기고 우리 표가 대신한다 ═══
+   위젯 래퍼에 고유 클래스가 없다(실측 — fi-wi-stats-overview 는 접속자 위젯과 공유).
+   Livewire 스냅샷의 컴포넌트 이름으로 잡는다. 경로(Widgets\\Server...)까지 넣어
+   우리 HairlineServerOverview(부분일치 위험)와 구분한다. */
+.fi-wi-widget[wire\:snapshot*="Widgets\\\\ServerOverview"] { display: none !important; }
+
+/* 폭은 CSS 가 아니라 **Filament 배관**으로 잡는다 — 뷰를 <x-filament-widgets::widget> 로
+   감싸면 getColumnSpan()('full')이 grid-column 으로 옮겨진다. 여기 남긴 규칙은 그
+   래퍼(.fi-wi-widget)가 혹시 span 을 못 받았을 때의 안전망일 뿐이다. */
+.fi-wi-widget:has(.hl-overview) { grid-column: 1 / -1; }
+
+.hl-overview {
+    background: #ffffff;
+    border: 1px solid #dfe2e7;
+    border-radius: 6px;
+    overflow: hidden;
+}
+.hl-table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+.hl-table tr + tr th, .hl-table tr + tr td { border-top: 1px solid #eef0f3; }
+.hl-table th {
+    width: 12%;
+    padding: 0.45rem 0.9rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.6563rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #9ba1aa;
+    background: #fafbfc;
+    white-space: nowrap;
+}
+.hl-table td { width: 38%; padding: 0.45rem 0.9rem; color: #1b1e24; }
+.hl-mono { font-size: 0.75rem; }
+.hl-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.hl-ok { background: #38cc65; }
+.hl-off { background: #c3c8d0; }
+.hl-busy { background: #f5a524; }
+
+/* ═══ 7. 다크 모드 정합 (라이트 퍼스트지만 깨지면 안 된다) ═══ */
+:where(.dark) .fi-body { background-color: #17191e; }
+:where(.dark) .fi-section, :where(.dark) .fi-ta-ctn,
+:where(.dark) .fi-dropdown-panel, :where(.dark) .fi-modal-window {
+    border-color: #2c2f36;
+    background-color: #1e2126;
+}
+:where(.dark) .fi-sidebar, :where(.dark) .fi-sidebar-header,
+:where(.dark) .fi-topbar > nav, :where(.dark) .fi-topbar {
+    background-color: #14161a;
+    border-color: #2c2f36;
+}
+:where(.dark) .fi-sidebar-item.fi-sidebar-item-has-url > .fi-sidebar-item-btn:hover { background-color: rgba(255,255,255,0.05); }
+:where(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-btn { background-color: rgba(0,111,255,0.16); }
+:where(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-sidebar-item-icon,
+:where(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-sidebar-item-label { color: #66a5ff; }
+:where(.dark) .hl-overview { background: #1e2126; border-color: #2c2f36; }
+:where(.dark) .hl-table th { background: #191c21; color: #7c828c; }
+:where(.dark) .hl-table td { color: #eef0f2; }
+:where(.dark) .hl-table tr + tr th, :where(.dark) .hl-table tr + tr td { border-color: #2c2f36; }
+:where(.dark) .fi-ta-row:hover { background-color: rgba(255,255,255,0.03); }
+
+/* ═══ 8. 탭: 필 스타일 — 선택만 블루, 카운트 강조 ═══ */
+.fi-tabs { gap: 0.25rem; }
+.fi-tabs-item { border-radius: 6px; padding: 0.3rem 0.7rem; font-size: 0.8125rem; color: #6B7280; }
+.fi-tabs-item.fi-active { color: #005ce6; background: rgba(0, 111, 255, 0.08); }
+.fi-tabs-item-badge { color: #005ce6; font-weight: 600; }
+
+/* ═══ 9. 모달: 오버레이 40% + 블러 살짝 (가이드) ═══ */
+.fi-modal-close-overlay { background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(2px); }
+
+/* ═══ 10. 아이콘 버튼: 호버에만 옅은 배경 ═══
+   라운드는 초안에서 원형(9999px)이었지만 다른 버튼(4px)과 어긋나, 전역을 4px 로 통일했다.
+   §17(표 액션)·§18(아이콘 업로드)에 흩어져 있던 4px 재정의는 이제 이 규칙과 같은 값이다. */
+.fi-icon-btn { border-radius: 4px; }
+.fi-icon-btn:hover { background: rgba(0, 0, 0, 0.05); }
+:where(.dark) .fi-icon-btn:hover { background: rgba(255, 255, 255, 0.07); }
+
+/* ═══ 11. 서버 목록(메인) ═══
+   Stack 레이아웃 카드가 헐겁다 — 패딩과 리소스바 간격을 조인다. */
+/* 프로그레스 바 자체도 얇게 */
+.fi-ta-record [style*="width:"][class*="rounded-full"] { border-radius: 3px; }
+.fi-ta-record .h-2, .fi-ta-record .h-2\.5, .fi-ta-record .h-3 { height: 5px !important; border-radius: 3px; }
+
+/* 상태 배지: 좌측 색 바가 아니라 **글자 태그**로 (요청) — 배지에 실체를 준다 */
+.fi-ta-record .fi-badge {
+    padding: 0.1rem 0.45rem;
+    font-weight: 600;
+    font-size: 0.6875rem;
+    letter-spacing: 0.01em;
+    border: 1px solid currentColor;
+    background: color-mix(in srgb, currentColor 12%, transparent);
+}
+/* 아이콘은 작게, 글자가 주인공 */
+.fi-ta-record .fi-badge .fi-icon { width: 0.75rem; height: 0.75rem; }
+
+/* ═══ 12. Stats 위젯(공통) — allocated users 등 모든 stats 가 함께 바뀐다 ═══
+   Filament 표준 StatsOverviewWidget 컴포넌트다(실측: UCS 의 위젯도 Stat::make 사용).
+   큰 숫자 카드 대신 **라벨 위·값 아래의 조밀한 블록**이다. */
+.fi-wi-stats-overview-stat {
+    padding: 0.6rem 0.85rem;
+    gap: 0.15rem;
+}
+.fi-wi-stats-overview-stat-label {
+    text-transform: uppercase;
+    font-size: 0.6563rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    color: #9ba1aa;
+    order: -1;
+}
+.fi-wi-stats-overview-stat-value {
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+}
+.fi-wi-stats-overview-stat-description { font-size: 0.6875rem; color: #7c828c; }
+:where(.dark) .fi-wi-stats-overview-stat-label { color: #7c828c; }
+
+/* ═══ 13. 서버 카드(뷰 오버라이드와 짝) — 중첩 패딩을 한 겹으로 ═══ */
+.hl-card-pad { padding: 0.6rem; }    /* 가로·세로 동일 */
+
+/* 카드들을 담는 격자(aria-label="server", .fi-ta-content-grid).
+   ⚠ Filament 이 padding: spacing*4 를 준 뒤 **padding-inline: spacing*6** 로 덧씌워
+     가로만 1.5배가 된다(빌드 CSS 확인) — 가로·세로를 같게 맞춘다. */
+.fi-ta-content-ctn .fi-ta-content.fi-ta-content-grid {
+    padding: 0.75rem !important;
+    gap: 0.5rem;
+}
+/* 같은 이유로 목록 헤더도 가로만 넓다 */
+.fi-ta-content-ctn .fi-ta-content-header { padding-inline: 0.75rem !important; }
+
+/* 🔴 **사용자 눈에 보이는 테두리·라운드·그림자는 .fi-ta-record 것이다**(빌드 CSS 확인):
+     border-radius: var(--radius-xl)(12px) + box-shadow + ring(테두리 역할).
+   내부 div 의 rounded 를 아무리 만져도 보이는 건 바뀌지 않는다 — 여기를 고쳐야 한다. */
+.fi-ta-record {
+    border-radius: 6px !important;
+    box-shadow: none !important;
+    border: 1px solid #dfe2e7;
+    background-color: #ffffff;
+    transition: background-color 120ms ease, border-color 120ms ease;
+}
+.fi-ta-record:hover {
+    background-color: #f4f7fb !important;
+    border-color: #c9d3e0;
+}
+:where(.dark) .fi-ta-record {
+    border-color: #2c2f36;
+    background-color: #1e2126 !important;
+}
+:where(.dark) .fi-ta-record:hover {
+    background-color: #23272d !important;
+    border-color: #3a3f47;
+}
+/* 안쪽 div 는 배경을 갖지 않는다 — 레코드가 칠한다(다크에서 dark:bg-gray-800 이 겹쳤다) */
+.hl-card-pad { background-color: transparent !important; }
+.hl-card-head { margin-bottom: 0.6rem; gap: 0.5rem !important; }
+.hl-card-head-solo { margin-bottom: 0.7rem; }
+.hl-card-title { font-size: 0.9375rem; font-weight: 600; letter-spacing: -0.01em; }
+.hl-card-uptime { font-size: 0.75rem; font-weight: 400; color: #9ba1aa; margin-left: 0.35rem; }
+.hl-card-desc { margin: 0 0 0.35rem; font-size: 0.75rem; color: #7c828c; }
+.hl-card-desc p { font-size: 0.75rem; }
+.hl-card-metrics { gap: 0.75rem !important; }
+.hl-metric { max-width: none; }
+/* 메트릭: 좌우뿐 아니라 **상하 패딩도 제거**하고 바를 얇게 (실측: 래퍼 .fi-ta-text.px-3,
+   바 컨테이너는 인라인 height:0.725rem — 인라인이라 !important 가 필요하다) */
+.hl-metric .fi-ta-text { padding: 0 !important; }
+.hl-metric .flex.flex-col.gap-2 { gap: 0.15rem !important; }
+.hl-metric .relative.rounded-full.overflow-hidden { height: 5px !important; border-radius: 3px; }
+.hl-metric .relative.rounded-full.overflow-hidden > div { border-radius: 3px; }
+.hl-metric span[class*="text-sm"] { font-size: 0.6875rem !important; line-height: 1.2; }
+/* 레코드 컨테이너의 바깥 패딩도 한 겹만.
+   ⚠ Filament 이 .fi-ta-record-content 에 padding-inline-start/end 를 준다
+   (그리드 레이아웃 spacing*2, 목록 spacing*6 — 빌드된 CSS 에서 확인). 카드가 자체 패딩을
+   갖고 있으니 여기서는 지운다. */
+.fi-ta-record-content-ctn { padding: 0; }
+.fi-ta-record .fi-ta-record-content {
+    gap: 0.5rem;
+    padding-inline-start: 0 !important;
+    padding-inline-end: 0 !important;
+}
+
+/* ═══ 14. Stats 위젯을 **표 형태**로 (요청) ═══
+   ⚠ 보더가 두 줄로 보인 이유(실측 DOM): 바깥 .fi-wi-stats-overview 에 내가 준 보더 +
+     안쪽 section.fi-section 이 이미 갖고 있는 보더. **바깥은 그리지 않는다** —
+     섹션 하나만 테두리를 갖고, 그 안에서 셀을 세로선으로 나눈다.
+   구조: .fi-wi-stats-overview > … > section.fi-section > .fi-section-content.fi-grid > .fi-grid-col */
+.fi-wi-stats-overview { border: 0 !important; background: transparent !important; }
+/* 흰 배경은 보더를 가진 요소(섹션)가 함께 갖는다 — 바깥에 주면 이중 보더가 된다(앞 커밋). */
+.fi-wi-stats-overview .fi-section {
+    overflow: hidden;
+    background: #ffffff;
+}
+:where(.dark) .fi-wi-stats-overview .fi-section { background: #1e2126; }
+.fi-wi-stats-overview .fi-section-content {
+    gap: 0 !important;
+    padding: 0 !important;
+}
+.fi-wi-stats-overview .fi-section-content > .fi-grid-col {
+    padding: 0.6rem;                 /* 가로·세로 동일 */
+    border-inline-start: 1px solid #eef0f3;
+}
+.fi-wi-stats-overview .fi-section-content > .fi-grid-col:first-child { border-inline-start: 0; }
+/* stat 요소는 두 종류다(실측):
+     - Stat::make          → .fi-wi-stats-overview-stat   (UCS 자원 위젯)
+     - SmallStatBlock::make → .fi-small-stat-block         (접속 인원·콘솔 오버뷰 계열)
+   후자는 자체적으로 bg-white·shadow-sm·rounded-lg·p-3 을 달고 나와 **섹션 안의 카드**로
+   보인다 — 표처럼 만들려면 그 셋을 지워야 한다. */
+.fi-wi-stats-overview .fi-wi-stats-overview-stat,
+.fi-wi-stats-overview .fi-small-stat-block,
+.fi-wi-stats-overview .fi-sc-component {
+    border: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+}
+/* ⚠ SmallStatBlock 은 라벨·값이 **인라인 span 두 개**라 한 줄로 붙는다(blade 실측).
+   메인의 Stat 처럼 라벨 위·값 아래로 쌓으려면 감싸는 span 을 세로 흐름으로 바꿔야 한다. */
+.fi-wi-stats-overview .fi-small-stat-block > span {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    align-items: flex-start;
+}
+/* SmallStatBlock 의 라벨·값도 stats 표와 같은 위계로 */
+.fi-wi-stats-overview .fi-small-stat-block > span > span:first-child {
+    text-transform: uppercase;
+    font-size: 0.6563rem !important;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    color: #9ba1aa !important;
+}
+.fi-wi-stats-overview .fi-small-stat-block > span > span:last-child {
+    font-size: 1.05rem !important;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+}
+:where(.dark) .fi-wi-stats-overview .fi-section-content > .fi-grid-col { border-inline-start-color: #2c2f36; }
+
+/* ═══ 15. 콘솔 페이지 ═══ */
+
+/* ⓪ 터미널 + 입력줄을 한 덩어리로: 라운드를 다른 표면(6px)과 맞추고 안쪽에 여백을 준다.
+   ⚠ 터미널 라운드는 console.css 가 #terminal 에 10px(상단만) 로 준다 — 그걸 덮는다.
+     입력줄의 하단 라운드는 blade 인라인 스타일(10px)이라 !important 가 필요하다. */
+.fi-wi-widget:has(#terminal) {
+    background-color: #14161a;
+    border-radius: 6px;
+    padding: 0.4rem;
+    overflow: hidden;
+}
+#terminal {
+    border-top-left-radius: 6px !important;
+    border-top-right-radius: 6px !important;
+}
+.fi-wi-widget:has(#terminal) > div:has(#send-command) {
+    border-bottom-left-radius: 6px !important;
+    border-bottom-right-radius: 6px !important;
+}
+
+/* ① 명령 입력창: 콘솔과 구분되되 같은 계열의 어두운 톤 (요청) */
+#send-command,
+#send-command:focus {
+    background-color: #14161a !important;
+    color: #e6e8ea;
+    padding: 0.45rem 0.5rem;
+    font-family: var(--font-mono);   /* 터미널과 같은 스택 — 프로바이더가 xterm 에도 넣는다 */
+    font-size: 0.8125rem;
+}
+#send-command::placeholder { color: #6b7280; }
+/* 입력줄 컨테이너 — 터미널보다 한 톤 밝게 해서 경계가 보이게 */
+#send-command:not(:only-child),
+.fi-wi-widget:has(#send-command) > div:has(#send-command) {
+    background-color: #14161a !important;
+    border-top: 1px solid #2c2f36;
+}
+.fi-wi-widget:has(#send-command) .fi-icon { color: #6b7280; }
+
+/* ② 차트: 코어를 숨기는 규칙은 **중단**했다(콘솔이 안 뜨는 문제 — 프로바이더 주석 참고).
+   지금은 카드 밀도만 손본다. */
+.fi-wi-chart .fi-section-header { padding: 0.5rem 0.75rem; }
+.fi-wi-chart .fi-section-content { padding: 0.25rem 0.5rem 0.5rem; }
+.fi-wi-chart .fi-section-header-heading {
+    text-transform: uppercase;
+    font-size: 0.6563rem;
+    letter-spacing: 0.07em;
+    color: #7c828c;
+}
+
+/* ═══ 16. 콘솔 상단 전원 버튼 ═══
+   코어가 ActionGroup->buttonGroup() 으로 **붙여** 렌더한다. 각 버튼은
+   wire:click="mountAction('start'…)" 로 구분된다(실측). PHP 를 못 고치므로 여기서 다룬다. */
+
+/* ① 붙은 버튼 그룹을 떼어놓는다.
+   빌드 CSS 실측 — 컨테이너와 자식 양쪽에 붙임 처리가 있다:
+     .fi-btn-group          { display:grid; border-radius:lg; box-shadow(그림자+ring) }
+     > .fi-btn              { border-radius: 0; flex: 1 }
+     > .fi-btn:first/last   { 바깥쪽 모서리만 라운드 }
+     > .fi-btn:not(:first)  { box-shadow: -1px 0 0 회색  ← 버튼 사이 구분선 }
+     > .fi-btn:not(:last)   { margin-inline-end: 1px }
+   gap 만 줘서는 안 떨어진다 — 위를 전부 되돌린다. */
+.fi-btn-group {
+    display: inline-flex !important;
+    gap: 0.4rem;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    --tw-ring-color: transparent;
+}
+.fi-btn-group > .fi-btn,
+.fi-btn-group > .fi-btn:nth-child(1 of .fi-btn),
+.fi-btn-group > .fi-btn:nth-last-child(1 of .fi-btn),
+.fi-btn-group > .fi-btn:not(:nth-child(1 of .fi-btn)),
+.fi-btn-group > .fi-btn:not(:nth-last-child(1 of .fi-btn)) {
+    border-radius: 4px !important;
+    box-shadow: none !important;
+    margin-inline-end: 0 !important;
+    flex: 0 0 auto;
+}
+.fi-btn-group .fi-btn.fi-size-xl {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8125rem;
+}
+.fi-btn-group .fi-btn .fi-icon { width: 1rem; height: 1rem; }
+
+/* ② 시작·중지 아이콘을 **속이 빈(아웃라인)** 으로 통일.
+   코어가 PlayerPlayFilled/PlayerStopFilled(채운 아이콘)를 쓴다 — SVG 경로는 CSS 로 못
+   바꾸므로, 원본 아이콘을 숨기고 같은 크기의 아웃라인 아이콘을 mask 로 그린다. */
+.fi-ac-btn-action[wire\:click^="mountAction('start'"] > svg.fi-icon:not(.fi-loading-indicator),
+.fi-ac-btn-action[wire\:click^="mountAction('stop'"] > svg.fi-icon:not(.fi-loading-indicator) {
+    display: none;
+}
+.fi-ac-btn-action[wire\:click^="mountAction('start'"]::before,
+.fi-ac-btn-action[wire\:click^="mountAction('stop'"]::before {
+    content: "";
+    width: 1rem;
+    height: 1rem;
+    flex: 0 0 auto;
+    background-color: currentColor;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+.fi-ac-btn-action[wire\:click^="mountAction('start'"]::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 4v16l13 -8z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 4v16l13 -8z'/%3E%3C/svg%3E");
+}
+.fi-ac-btn-action[wire\:click^="mountAction('stop'"]::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='5' width='14' height='14' rx='2'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='5' width='14' height='14' rx='2'/%3E%3C/svg%3E");
+}
+
+/* ③ 재시작: 테두리만 추가 (배경·글자색은 코어 그대로 둔다) */
+.fi-btn-group .fi-ac-btn-action[wire\:click^="mountAction('restart'"] {
+    border: 1px solid #dfe2e7;
+}
+:where(.dark) .fi-btn-group .fi-ac-btn-action[wire\:click^="mountAction('restart'"] {
+    border-color: #3a3f47;
+}
+
+/* ④ 중지도 시작처럼 채운 버튼 + 흰 글자·아이콘 */
+.fi-ac-btn-action[wire\:click^="mountAction('stop'"],
+.fi-ac-btn-action[wire\:click^="mountAction('kill'"] {
+    background-color: #f0383b !important;
+    color: #ffffff !important;
+}
+.fi-ac-btn-action[wire\:click^="mountAction('stop'"]:hover,
+.fi-ac-btn-action[wire\:click^="mountAction('kill'"]:hover {
+    background-color: #d92c2f !important;
+}
+.fi-ac-btn-action[wire\:click^="mountAction('stop'"] .fi-btn-label,
+.fi-ac-btn-action[wire\:click^="mountAction('kill'"] .fi-btn-label { color: #ffffff !important; }
+
+/* ═══ 17. 표 레이아웃(파일 관리자 등) — 아이콘·행 밀도 ═══
+   대상은 진짜 <table> 을 쓰는 목록(.fi-ta-table)이다. 메인의 서버 카드는
+   .fi-ta-content-grid + .fi-ta-record 라 여기 규칙이 닿지 않는다 — 의도한 분리다. */
+
+/* ① 아이콘 버튼: 툴바(상단)와 행이 같은 .fi-ta-actions 안에 있어 한 규칙으로 잡힌다.
+   실측한 코어 값:
+     .fi-icon-btn            { width/height: 36px; margin: -8px; border-radius: lg }
+     .fi-size-sm / .fi-size-md 로 상자만 32/36px 로 갈린다
+     안쪽 svg 는 fi-size-xl(28px)·fi-size-lg(24px)로 제각각
+   상자·아이콘 크기를 하나로 통일한다(라운드는 §10 이 전역 4px 로 맡는다). */
+.fi-ta-actions { gap: 0.45rem; }
+.fi-ta-actions .fi-icon-btn {
+    width: 1.75rem;
+    height: 1.75rem;
+    margin: 0;
+}
+.fi-ta-actions .fi-icon-btn .fi-icon { width: 1.125rem; height: 1.125rem; }
+
+/* 색은 코어가 --text/--dark-text 변수를 거쳐 칠한다(.fi-icon-btn.fi-color{color:var(--text)}).
+   color 를 직접 덮으면 hover 에서 도로 원색이 되므로 **변수를 갈아끼운다**.
+   삭제(danger)만 예외로 둔다 — 요청. */
+.fi-ta-actions .fi-icon-btn:not(.fi-color-danger) {
+    color: #1b1e24;
+    --text: #1b1e24;
+    --hover-text: #000000;
+    --dark-text: #eef0f2;
+    --dark-hover-text: #ffffff;
+}
+:where(.dark) .fi-ta-actions .fi-icon-btn:not(.fi-color-danger) { color: #eef0f2; }
+
+/* 파일 종류 아이콘(이름 칸)도 같은 크기·검정으로 — 코어는 gray-400 이다 */
+.fi-ta-table .fi-ta-text-item > .fi-icon,
+.fi-ta-table .fi-ta-text-item > span:not(.fi-badge) > .fi-icon {
+    width: 1.125rem;
+    height: 1.125rem;
+    color: #1b1e24;
+}
+:where(.dark) .fi-ta-table .fi-ta-text-item > .fi-icon,
+:where(.dark) .fi-ta-table .fi-ta-text-item > span:not(.fi-badge) > .fi-icon { color: #eef0f2; }
+
+/* ② 행 높이: 겹겹이 쌓인 세로 여백을 **전부** 걷어내야 눈에 보이게 낮아진다.
+   실측한 네 겹 — 하나만 고치면 나머지가 높이를 붙잡는다:
+     (a) .fi-ta-text:not(.fi-inline)      padding-block 16px  ← 텍스트 칸의 진짜 여백
+     (b) .fi-ta-text-item.fi-size-sm      line-height  24px
+     (c) .fi-ta-cell:has(.fi-ta-actions)  padding-block 16px  ← 액션 칸
+     (d) .fi-ta-cell.fi-ta-selection-cell padding-block 16px  ← 체크박스 칸
+   여기에 ①의 아이콘 상자(36px)까지 더해져 56px 짜리 행이 된다. */
+.fi-ta-table .fi-ta-text:not(.fi-inline) {
+    padding-block: 0.45rem;
+    padding-inline: 0.75rem;
+}
+.fi-ta-table .fi-ta-text-item.fi-size-sm {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+}
+.fi-ta-table .fi-ta-cell:has(.fi-ta-actions) { padding-block: 0.3rem; }
+.fi-ta-table .fi-ta-cell.fi-ta-selection-cell { padding-block: 0.3rem; }
+
+/* TextColumn->description() 의 보조 줄(플러그인 목록의 설명 등). 코어는 이걸 본문과
+   같은 14px 로 둬서 이름과 설명이 같은 무게로 읽힌다 — settings 의 helperText 와 같은
+   위계(11px·회색)로 낮추고 줄 간격도 조인다. 이 클래스를 쓰는 모든 표에 함께 걸린다. */
+.fi-ta-table .fi-ta-text > .fi-ta-text-description {
+    font-size: 0.6875rem;
+    line-height: 1.5;
+    color: #8b919b;
+}
+.fi-ta-table .fi-ta-text.fi-ta-text-has-descriptions:not(.fi-ta-text-has-badges) { row-gap: 0.1rem; }
+:where(.dark) .fi-ta-table .fi-ta-text > .fi-ta-text-description { color: #767c86; }
+
+/* ③ '⋯' 드롭다운 안의 항목(이름 변경·복사 등)을 **사이드바 항목과 같은 치수**로 (요청).
+   코어 실측값 비교 — 둘이 미묘하게 다르다:
+                    사이드바(.fi-sidebar-item-btn)   드롭다운(.fi-dropdown-list-item)
+     padding        8px                              8px
+     column-gap     12px                             8px
+     border-radius  --radius-lg (8px)                --radius-md (6px)
+     아이콘          fi-size-lg (24px)                fi-size-lg (24px)
+   §3 에서 사이드바를 (세로 6.4px / gap 9.6px / 4px 라운드 / 아이콘 17.6px)로 잡았으니
+   여기도 같은 값을 쓴다. 범위는 액션 드롭다운(.fi-ac-grouped-action)으로 한정 —
+   사용자 메뉴·컬럼 관리자 같은 다른 드롭다운은 건드리지 않는다. */
+.fi-ac-grouped-action.fi-dropdown-list-item {
+    padding-block: 0.4rem;
+    column-gap: 0.6rem;
+    gap: 0.6rem;
+    border-radius: 4px;
+    font-size: 0.8125rem;
+}
+.fi-ac-grouped-action.fi-dropdown-list-item > .fi-icon { width: 1.1rem; height: 1.1rem; }
+.fi-ac-grouped-action .fi-dropdown-list-item-label { font-size: 0.8125rem; }
+
+/* ═══ 18. 폼 카드를 표로 — startup 의 서버 변수, settings 의 필드셋 ═══
+   둘 다 "섹션(그룹) 안에 카드가 늘어선" 같은 구조다. 실측한 코어 마크업:
+
+     startup   Section → .fi-fo-repeater > ul.fi-fo-repeater-items(2열 그리드)
+                       → li.fi-fo-repeater-item (라운드 12px·흰 배경·shadow·ring)
+                       → .fi-fo-repeater-item-content(패딩 16px) → .fi-fo-field
+     settings  Section → fieldset.fi-fieldset (라운드 12px·1px 보더·패딩 24px)
+                       → legend + 중첩 .fi-grid → .fi-fo-field / .fi-in-entry
+
+   카드 껍데기를 벗기고 컨테이너 하나만 표 상자로 남긴 뒤, 필드를
+   **라벨 왼쪽 / 값 오른쪽** 한 줄로 눕힌다.
+
+   ⚠ 필드를 눕히는 배관은 Filament 에 이미 있다 — `->inlineLabel()` 을 주면
+     `.fi-fo-field-has-inline-label` 이 붙어 3열 그리드가 된다. 하지만 그건 PHP 쪽
+     선언이고 우리는 코어를 안 고치므로, 같은 결과를 CSS 로 만든다:
+     .fi-fo-field / .fi-in-entry 는 원래 `display:grid` 라 열만 정의하면
+     라벨열·값열이 그대로 옆으로 붙는다. */
+
+/* 키 열 폭은 한 곳에서 정한다 — 라벨 없는 블록을 같은 만큼 들여쓸 때도 이 값을 쓴다 */
+.fi-fo-repeater, .fi-fieldset { --hl-key: 22%; }
+
+/* ① 필드 = 표의 한 행 */
+.fi-fo-repeater-item .fi-fo-field,
+.fi-fo-repeater-item .fi-in-entry,
+.fi-fieldset .fi-fo-field,
+.fi-fieldset .fi-in-entry {
+/* 🔴 폭은 **고정 트랙**이어야 한다. minmax(0, 22%) 는 "최대 22%, 내용만큼 줄어듦"이라
+      라벨 길이마다 값 시작점이 달라진다. 게다가 행마다 .fi-fo-field 가 **각각 별개의
+      grid** 라 서로 열을 맞출 방법이 없다 — 같은 고정값을 줘야 줄이 선다. */
+    grid-template-columns: var(--hl-key) minmax(0, 1fr);
+    align-items: start;
+    column-gap: 0.75rem;
+    row-gap: 0;
+    padding: 0.75rem;
+}
+/* 값이 input + 설명 두 줄일 때 라벨이 가운데로 내려가지 않게 위 정렬 + 첫 줄 보정.
+   코어도 inline-label 필드에 같은 방식을 쓴다(.fi-fo-select-wrp… padding-top: 6px). */
+.fi-fo-repeater-item .fi-fo-field > .fi-fo-field-label-col,
+.fi-fieldset .fi-fo-field > .fi-fo-field-label-col,
+.fi-fieldset .fi-in-entry > .fi-in-entry-label-col {
+    align-items: start;
+    height: auto;
+    row-gap: 0;
+    padding-top: 0.375rem;
+}
+/* 🔴 라벨이 숨겨진 필드(Limits 의 CPU·메모리… — 라벨이 `label.fi-sr-only` 로 나온다)는
+     **값 칸을 전체 폭**으로 줘야 한다. `.fi-sr-only` 는 position:absolute 라 격자 칸을
+     차지하지 않고, 그러면 값 칸이 1열(키 열 22%)에 배치돼 입력이 22% 폭으로 찌그러진다
+     — 좁은 화면에서 잘려 보이던 원인이 이것이다.
+     기본을 전체 폭으로 두고, **보이는 라벨 열이 실제로 있을 때만** 2열로 보낸다.
+     (앞서 쓴 `:first-child` 는 sr-only 라벨이 앞에 있어 매치되지 않았다.) */
+.fi-fo-repeater-item .fi-fo-field > .fi-fo-field-content-col,
+.fi-fieldset .fi-fo-field > .fi-fo-field-content-col,
+.fi-fo-repeater-item .fi-in-entry > .fi-in-entry-content-col,
+.fi-fieldset .fi-in-entry > .fi-in-entry-content-col { grid-column: 1 / -1; }
+.fi-fo-repeater-item .fi-fo-field > .fi-fo-field-label-col ~ .fi-fo-field-content-col,
+.fi-fieldset .fi-fo-field > .fi-fo-field-label-col ~ .fi-fo-field-content-col,
+.fi-fo-repeater-item .fi-in-entry > .fi-in-entry-label-col ~ .fi-in-entry-content-col,
+.fi-fieldset .fi-in-entry > .fi-in-entry-label-col ~ .fi-in-entry-content-col { grid-column: 2; }
+/* 오류 메시지는 값 아래 한 줄로 */
+.fi-fo-repeater-item .fi-fo-field-wrp-error-message,
+.fi-fieldset .fi-fo-field-wrp-error-message { grid-column: 2 / -1; }
+
+/* ⚠ input 안쪽 `{{VAR_NAME}}` 접두 셀의 폭은 **건드리지 않는다**. 내용 길이를 따라가서
+   줄마다 구분선 위치가 달라지긴 하지만, 폭을 고정하면 긴 변수명이 접히면서 오히려
+   지저분해진다 — 실제로 적용해 보고 코어 동작이 낫다고 판단했다(사용자 확인). */
+
+/* 설명(helperText)은 값 칸 안, 입력 아래에 `.fi-sc > .fi-sc-text` 로 들어온다(실측).
+   그대로 두면 .fi-sc 가 준 14px 라 라벨·값과 같은 무게로 읽힌다 — 한 단 낮춘다. */
+.fi-fo-repeater-item .fi-fo-field-content-col,
+.fi-fieldset .fi-fo-field-content-col { row-gap: 0.3rem; }
+.fi-fo-repeater-item .fi-fo-field-content-col .fi-sc-text,
+.fi-fieldset .fi-fo-field-content-col .fi-sc-text {
+    font-size: 0.6875rem;
+    line-height: 1.5;
+    color: #8b919b;
+}
+:where(.dark) .fi-fo-repeater-item .fi-fo-field-content-col .fi-sc-text,
+:where(.dark) .fi-fieldset .fi-fo-field-content-col .fi-sc-text { color: #767c86; }
+
+/* 표 안에서는 라벨도 표 머리글 위계로 */
+.fi-fo-repeater-item .fi-fo-field-label-content,
+.fi-fieldset .fi-fo-field-label-content,
+.fi-fieldset .fi-in-entry-label { font-size: 0.75rem; font-weight: 500; color: #5c626c; }
+:where(.dark) .fi-fo-repeater-item .fi-fo-field-label-content,
+:where(.dark) .fi-fieldset .fi-fo-field-label-content,
+:where(.dark) .fi-fieldset .fi-in-entry-label { color: #a8aeb8; }
+
+/* ② 격자를 1열로.
+   🔴 `--cols-lg: repeat(2, …)` 는 **인라인 style 속성**으로 박혀 있다(실측). 커스텀
+      속성은 인라인이 언제나 이기므로 스타일시트에서 변수를 덮는 건 통하지 않는다 —
+      실제로 안 먹었다. 계산 결과인 grid-template-columns 를 직접 덮어야 한다.
+   ⚠ 함께 col-span 도 풀어야 한다. `--col-span-lg: span 5` 같은 값이 남아 있으면
+      1열 격자에 **암묵적 열**이 생겨 도로 여러 칸으로 벌어진다. */
+.fi-fo-repeater .fi-fo-repeater-items,
+.fi-fieldset .fi-grid { grid-template-columns: minmax(0, 1fr) !important; }
+.fi-fo-repeater .fi-fo-repeater-items > .fi-grid-col,
+.fi-fieldset .fi-grid > .fi-grid-col { grid-column: auto !important; }
+
+.fi-fo-repeater .fi-fo-repeater-items {
+    gap: 0;
+    border: 1px solid #dfe2e7;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #ffffff;
+}
+/* 카드 껍데기 제거 — 보더는 ring(box-shadow)으로 그려져 있어 box-shadow 를 지우면 같이 간다 */
+.fi-fo-repeater .fi-fo-repeater-item {
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+}
+.fi-fo-repeater .fi-fo-repeater-item + .fi-fo-repeater-item { border-top: 1px solid #eef0f3; }
+.fi-fo-repeater .fi-fo-repeater-item-content { padding: 0; }
+:where(.dark) .fi-fo-repeater .fi-fo-repeater-items { border-color: #2c2f36; background: #1e2126; }
+:where(.dark) .fi-fo-repeater .fi-fo-repeater-item { background: transparent; }
+:where(.dark) .fi-fo-repeater .fi-fo-repeater-item + .fi-fo-repeater-item { border-top-color: #2c2f36; }
+
+/* ③ settings — 필드셋을 표 상자로 */
+.fi-fieldset:not(.fi-fieldset-not-contained) {
+    border-radius: 6px;
+    border-color: #dfe2e7;
+    padding: 0;
+    background: #ffffff;
+    /* 🔴 legend 는 회색 배경을 가진 **직각** 블록이라, 이게 없으면 6px 둥근 모서리
+       바깥으로 머리글 배경이 삐져나온다(리피터 쪽에는 처음부터 있었다). */
+    overflow: hidden;
+}
+/* legend 는 기본적으로 보더를 끊고 앉는다. float 로 빼면 '렌더드 legend' 가 아니게 되어
+   테두리가 이어지고, 우리가 원하는 머리글 행이 된다. 뒤 내용은 clear 로 내린다. */
+.fi-fieldset > legend {
+    float: left;
+    width: 100%;
+    margin: 0;                       /* UA 기본 여백이 남아 좌측으로 밀리는 것 차단 */
+    padding: 0.4rem 0.75rem;
+    background: #fafbfc;
+    text-transform: uppercase;
+    font-size: 0.6563rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    color: #9ba1aa;
+    line-height: 1.6;
+}
+.fi-fieldset > :not(legend) { clear: both; }
+/* 중첩 그리드의 24px 간격을 지우고, 행 구분은 헤어라인이 맡는다 */
+.fi-fieldset .fi-sc.fi-sc-has-gap { gap: 0; }
+.fi-fieldset .fi-fo-field,
+.fi-fieldset .fi-in-entry { border-top: 1px solid #eef0f3; }
+
+/* 필드가 아닌 블록(서버 아이콘 썸네일 + 업로드·삭제 버튼 — Grid::make()->columnStart(6),
+   원래는 이름·설명 오른쪽에 있던 칸)은 라벨이 없다. 1열로 눕히면서 x=0 에서 시작해
+   **키 열 바로 아래**에 붙어 버린다 — 키 열만큼 들여써서 값 열에 맞춘다.
+   ⚠ `.fi-fieldset > .fi-grid >` 로 **직계**만 잡는다. 그냥 후손으로 두면 아이콘 블록
+     안의 Image 도 다시 .fi-grid-col 이라 같은 패딩이 한 번 더 걸려 두 겹이 된다. */
+.fi-fieldset > .fi-grid > .fi-grid-col:not(:has(.fi-fo-field)):not(:has(.fi-in-entry)) {
+    padding: 0.75rem 0.75rem 0.75rem calc(var(--hl-key) + 1.5rem);
+    border-top: 1px solid #eef0f3;
+}
+:where(.dark) .fi-fieldset > .fi-grid > .fi-grid-col:not(:has(.fi-fo-field)):not(:has(.fi-in-entry)) {
+    border-top-color: #2c2f36;
+}
+/* 그 블록 **안쪽**(이미지 + 아이콘 버튼들)은 표가 아니다 — §22 가 패턴으로 다룬다.
+   여기서는 위의 1열 못박기가 안쪽까지 내려가지 않게만 해 두면 된다. */
+:where(.dark) .fi-fieldset:not(.fi-fieldset-not-contained) { border-color: #2c2f36; background: #1e2126; }
+:where(.dark) .fi-fieldset > legend { background: #191c21; color: #7c828c; }
+:where(.dark) .fi-fieldset .fi-fo-field,
+:where(.dark) .fi-fieldset .fi-in-entry { border-top-color: #2c2f36; }
+
+/* ═══ 19. 표 안의 링크 액션 (관리자 · 플러그인 목록의 '보기'·'Settings') ═══
+   실측 마크업: `button.fi-ac-link-action.fi-link.fi-size-sm > svg.fi-icon + span.fi-link-label`.
+   코어는 링크처럼 다룬다 — 글자 14px, 여백 없음, hover 에 밑줄. 표 안에서 혼자 크고,
+   같은 줄의 '⋯' 아이콘 버튼과 인상이 안 맞았다. 글자를 12px 로 줄이고 §10 의 아이콘
+   버튼과 같은 hover 배경을 준다.
+   ⚠ hover 밑줄을 지우려면 특이도를 맞춰야 한다. 코어 규칙이
+     `:is(…, .fi-link:not(.fi-disabled):not([disabled])):hover` = (0,4,0) 이라
+     `.fi-ta-actions .fi-ac-link-action:hover`(0,3,0)로는 진다 — `.fi-link` 를 더 붙여
+     (0,4,0)로 맞추면 뒤에 실리는 우리 규칙이 이긴다(!important 불필요). */
+.fi-ta-actions .fi-ac-link-action.fi-link {
+    padding: 0.25rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    gap: 0.25rem;
+    transition: background-color 120ms ease;
+}
+.fi-ta-actions .fi-ac-link-action.fi-link > .fi-icon { width: 1rem; height: 1rem; }
+.fi-ta-actions .fi-ac-link-action.fi-link:hover {
+    background: rgba(0, 0, 0, 0.05);
+    text-decoration: none;
+}
+:where(.dark) .fi-ta-actions .fi-ac-link-action.fi-link:hover { background: rgba(255, 255, 255, 0.07); }
+
+/* ═══ 20. 페이지 머리글 액션 (서버 상세의 삭제·콘솔·저장 등) ═══
+   유저·관리자 양쪽 공통이다. 코어는 이 자리를 **맨 아이콘**으로 둔다(실측:
+   `.fi-header-actions-ctn > .fi-ac > button.fi-ac-icon-btn-action.fi-icon-btn.fi-size-md`,
+   배경·테두리 없음). 눌리는 것인지 알아보기 어려워 흰 배경 + 헤어라인 보더를 줘
+   확실한 버튼으로 만든다. 아이콘 색(삭제 빨강·나머지 파랑)은 코어 그대로 둔다.
+   ⚠ .fi-icon-btn 의 margin:-8px(클릭 영역 확장)을 0 으로 눕혀야 한다. 테두리가 생기면
+     그 음수 여백이 버튼끼리 겹치게 만들고 gap 도 먹어 버린다. */
+.fi-header-actions-ctn .fi-icon-btn {
+    width: 2.1rem;
+    height: 2.1rem;
+    margin: 0;
+    background: #ffffff;
+    border: 1px solid #dfe2e7;
+    border-radius: 4px;
+    transition: background-color 120ms ease, border-color 120ms ease;
+}
+.fi-header-actions-ctn .fi-icon-btn .fi-icon { width: 1.35rem; height: 1.35rem; }
+/* §10 의 hover 배경(0,2,0)보다 구체적이라 이 규칙이 이긴다 */
+.fi-header-actions-ctn .fi-icon-btn:hover {
+    background: #f4f7fb;
+    border-color: #c9d3e0;
+}
+.fi-header-actions-ctn > .fi-ac { gap: 0.4rem; }
+:where(.dark) .fi-header-actions-ctn .fi-icon-btn {
+    background: #1e2126;
+    border-color: #3a3f47;
+}
+:where(.dark) .fi-header-actions-ctn .fi-icon-btn:hover {
+    background: #23272d;
+    border-color: #4a5058;
+}
+
+/* ═══ 21. 활동 기록 목록 (사용자 상세 · Activity 탭) ═══
+   여기도 Repeater 라 §18 의 표 규칙을 그대로 탄다. 다만 항목 안이 폼 필드가 아니라
+   **인포리스트 엔트리**(TextEntry)이고, 내용은 ActivityLog::htmlable() 이 만들어 낸
+   **인라인 스타일 날 HTML** 이다(실측 — 클래스가 하나도 없다):
+
+     <div style='display:flex; align-items:center'>
+       <img width=50 height=50 style='margin-right:15px; border-radius:50%'>
+       <div><p>사용자 — 이벤트</p><p>설명</p><p>IP — 상대시각</p></div>
+     </div>
+
+   그래서 §18 이 .fi-fo-repeater-item-content 의 패딩을 지운 뒤로 글자가 테두리에
+   붙어 있었다. 여백을 되돌리고, 세 줄에 위계를 준다.
+   ⚠ 아바타 크기는 width/height **속성**이라 CSS 로 이긴다. 반면 margin-right 는
+     **인라인 style** 이라 !important 가 필요하다. */
+.fi-fo-repeater-item .fi-in-text-item { display: block; }
+.fi-fo-repeater-item .fi-in-text-item img {
+    width: 2rem;
+    height: 2rem;
+    margin-right: 0.6rem !important;
+    flex-shrink: 0;
+}
+.fi-fo-repeater-item .fi-in-text-item p {
+    margin: 0;
+    line-height: 1.45;
+}
+.fi-fo-repeater-item .fi-in-text-item p:nth-of-type(1) {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #1b1e24;
+}
+.fi-fo-repeater-item .fi-in-text-item p:nth-of-type(2) { font-size: 0.75rem; color: #5c626c; }
+.fi-fo-repeater-item .fi-in-text-item p:nth-of-type(3) { font-size: 0.6875rem; color: #9ba1aa; }
+:where(.dark) .fi-fo-repeater-item .fi-in-text-item p:nth-of-type(1) { color: #eef0f2; }
+:where(.dark) .fi-fo-repeater-item .fi-in-text-item p:nth-of-type(2) { color: #a8aeb8; }
+:where(.dark) .fi-fo-repeater-item .fi-in-text-item p:nth-of-type(3) { color: #767c86; }
+
+/* ═══ 22. Grid 안에 직접 놓인 액션 (아이콘 업로드·삭제) ═══
+   같은 패턴이 유저 Settings 와 관리자 서버 상세(information 탭) 두 곳에 있다.
+   코어 스키마가 이렇게 짠다 — Grid(기본 2열) 안에 이미지 하나와 Actions 둘:
+
+     .fi-grid (lg 2열)
+       > .fi-grid-col (span 1/-1)   ← 이미지
+       > .fi-sc-action              ← 업로드   (1열)
+       > .fi-sc-action              ← 삭제     (2열)  ← 반대편 끝으로 밀린다
+
+   그래서 버튼 둘이 격자 양 끝에 떨어져 앉는다. 격자를 풀어 이미지 한 줄,
+   그 아래 버튼들을 왼쪽부터 나란히 놓는다.
+   §18 에서 Settings 쪽만 필드셋 범위로 고쳤었는데, 관리자 쪽은 필드셋 밖이라
+   닿지 않았다 — **패턴(자식에 .fi-sc-action 이 있는 격자)** 기준으로 옮겨
+   두 곳을 한 규칙으로 덮는다.
+   ⚠ .fi-icon-btn 의 margin:-8px(코어의 클릭 영역 확장)을 0 으로 눕혀야 gap 이 산다.
+   ⚠ 라벨 옆 힌트 액션도 .fi-sc-action 이지만 그쪽 부모는 .fi-sc.fi-inline 이라
+     .fi-grid 가 아니다(실측) — 이 규칙에 걸리지 않는다. */
+.fi-grid:has(> .fi-sc-action) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+}
+.fi-grid:has(> .fi-sc-action) > .fi-grid-col { flex: 0 0 100%; }
+.fi-grid:has(> .fi-sc-action) .fi-icon-btn { margin: 0; }
+
+/* ═══ 23. 관리자 서버 상세 · actions 탭 ═══
+   ① 코어가 `.fi-ac.fi-width-full { display:grid; grid-template-columns:
+   repeat(auto-fit, minmax(0,1fr)) }` 로 버튼을 폭 100% 까지 늘린다. 버튼 하나가
+   패널을 가로지르니 눌러야 할 것보다 배너처럼 보인다 — 내용 폭으로 되돌린다. */
+.fi-sc-actions > .fi-ac.fi-width-full {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 0.4rem;
+}
+
+/* ② 🔴 이 탭은 **키/값 표가 아니다** — "버튼 + 그 설명" 짝이 네 벌 있는 것이다.
+   §18 의 필드셋 표 규칙에 그대로 끼워 맞추려다 세 가지가 한꺼번에 어긋났다(실측 구조):
+
+     .fi-grid-col                     ← 그룹 하나
+       > .fi-grid (1열로 강제됨)
+           > .fi-grid-col → .fi-sc-actions > .fi-ac > button    ← 버튼
+           > .fi-grid-col → .fi-fo-toggle-buttons-wrp.fi-fo-field ← 설명
+
+   - 버튼 쪽은 .fi-fo-field 가 아니라 §18 의 행 패딩(0.75rem)을 못 받는다 → 버튼만 여백 없음
+   - 설명은 ToggleButtons 의 **hint** 라 .fi-fo-field-label-col, 즉 **키 열(22%)** 안에
+     들어간다 → 긴 문장이 좁은 열에 갇혀 좌측으로 몰린다
+   - §18 이 .fi-fo-field 마다 긋는 border-top 이 **버튼과 그 설명 사이**에 선을 만든다
+
+   그룹 하나를 한 행으로 보고, 여백과 구분선을 **그룹 바깥**으로 올린다.
+   안쪽은 표 규칙을 풀어 버튼 한 줄 / 설명 한 줄로 쌓는다. */
+.fi-fieldset > .fi-grid > .fi-grid-col:has(.fi-sc-actions) {
+    padding: 0.75rem;
+    border-top: 1px solid #eef0f3;
+}
+:where(.dark) .fi-fieldset > .fi-grid > .fi-grid-col:has(.fi-sc-actions) { border-top-color: #2c2f36; }
+
+.fi-fieldset .fi-grid-col:has(.fi-sc-actions) .fi-fo-field {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0;
+    border-top: 0;
+    row-gap: 0;
+}
+.fi-fieldset .fi-grid-col:has(.fi-sc-actions) .fi-fo-field > .fi-fo-field-label-col { padding-top: 0; }
+.fi-fieldset .fi-grid-col:has(.fi-sc-actions) .fi-fo-field > .fi-fo-field-label-col ~ .fi-fo-field-content-col {
+    grid-column: 1;
+}
+/* §18 이 필드셋 안의 격자 간격을 0 으로 만들었다 — 그룹 안에서는 버튼과 설명이
+   붙지 않게 되돌린다 */
+.fi-fieldset .fi-grid-col:has(.fi-sc-actions) .fi-sc.fi-sc-has-gap { gap: 0.5rem; }
+
+/* ═══ 24. 상태(Health) 페이지 ═══
+   뷰 오버라이드와 짝(views-override/filament/pages/health.blade.php).
+   코어는 2열 카드 격자(shadow-lg·rounded-xl·원형 아이콘 배경)였다 —
+   콘솔 오버뷰(.hl-table)와 같은 결의 헤어라인 행 목록으로 바꿨다. */
+.hl-health {
+    background: #ffffff;
+    border: 1px solid #dfe2e7;
+    border-radius: 6px;
+    overflow: hidden;
+}
+.hl-health-row {
+    display: grid;
+    grid-template-columns: 1.1rem minmax(0, 22%) minmax(0, 1fr);
+    align-items: center;
+    column-gap: 0.6rem;
+    padding: 0.6rem 0.9rem;
+}
+.hl-health-row + .hl-health-row { border-top: 1px solid #eef0f3; }
+.hl-health-row:hover { background: #f7f9fc; }
+/* 상태색은 코어가 붙여 주는 text-{color} 유틸리티를 그대로 쓴다 — 크기만 줄인다.
+   ⚠ x-filament::icon 이 `fi-icon fi-size-md`(20px)를 함께 붙인다(렌더해 확인).
+     `.hl-health-icon` 하나로는 (0,1,0) 이라 진다 — `.fi-icon` 을 붙여 (0,2,0)으로. */
+.hl-health-icon.fi-icon { width: 1.1rem; height: 1.1rem; }
+.hl-health-name { font-size: 0.8125rem; font-weight: 600; color: #1b1e24; }
+.hl-health-summary { font-size: 0.75rem; color: #7c828c; }
+.hl-health-time {
+    margin-top: 0.6rem;
+    text-align: center;
+    font-size: 0.6875rem;
+    color: #9ba1aa;
+}
+.hl-health-time.hl-health-stale { color: #f0383b; font-weight: 600; }
+:where(.dark) .hl-health { background: #1e2126; border-color: #2c2f36; }
+:where(.dark) .hl-health-row + .hl-health-row { border-top-color: #2c2f36; }
+:where(.dark) .hl-health-row:hover { background: rgba(255,255,255,0.03); }
+:where(.dark) .hl-health-name { color: #eef0f2; }
+
+/* ═══ 25. 에이전트 사이드바(wa-*) 밀도 동기화 ═══ */
+.wa-panel { font-size: 13px; }
+.wa-bubble { font-size: 0.8125rem; padding: 0.5rem 0.7rem; }
+.wa-card { border-radius: 6px; }
+.wa-input { border-radius: 4px; font-size: 0.8125rem; }

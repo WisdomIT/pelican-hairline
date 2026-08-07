@@ -1,0 +1,3 @@
+# 배포 시점에만 동봉되는 것들 (deploy.sh 가 넣는다) — 저장소에는 두지 않는다
+/resources/catalog/
+/resources/knowledge/
