@@ -10,6 +10,8 @@
 #
 #   2. `meta` must not ship. It is the panel's own install state (status,
 #      status_message); shipping it hands your local state to every installer.
+#      The repo is already clean — the Hub rejects a plugin.json that carries it —
+#      so the strip below is a guard, not the main line of defence.
 #
 #  Usage: bash scripts/build-release.sh
 set -euo pipefail
