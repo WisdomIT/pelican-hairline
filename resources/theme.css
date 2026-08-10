@@ -950,8 +950,11 @@ body, .fi-body {
 :where(.dark) .hl-health-row:hover { background: rgba(255,255,255,0.03); }
 :where(.dark) .hl-health-name { color: #eef0f2; }
 
-/* ═══ 25. 에이전트 사이드바(wa-*) 밀도 동기화 ═══ */
-.wa-panel { font-size: 13px; }
-.wa-bubble { font-size: 0.8125rem; padding: 0.5rem 0.7rem; }
-.wa-card { border-radius: 6px; }
-.wa-input { border-radius: 4px; font-size: 0.8125rem; }
+/* ═══ 25. Concierge 사이드바(cg-*) 밀도 동기화 ═══
+   ⚠ 다른 플러그인의 마크업이다 — 그쪽이 이름을 바꾸면 여기는 조용히 무효가 된다.
+     실제로 wisdom-agent → Concierge 리네임에서 접두사가 wa- → cg- 로 바뀌며 한 번
+     끊겼다. 선택자가 안 맞아도 CSS 는 오류를 내지 않으니 눈으로만 알 수 있다. */
+.cg-panel { font-size: 13px; }
+.cg-bubble { font-size: 0.8125rem; padding: 0.5rem 0.7rem; }
+.cg-card { border-radius: 6px; }
+.cg-input { border-radius: 4px; font-size: 0.8125rem; }
