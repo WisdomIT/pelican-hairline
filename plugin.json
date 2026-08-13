@@ -3,7 +3,7 @@
     "name": "Hairline",
     "author": "WisdomIT",
     "description": "Shadowless, hairline-bordered, high-density theme for Pelican.",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "panels": [
         "admin",
         "app",
