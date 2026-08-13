@@ -16,7 +16,7 @@
             </tr>
             <tr>
                 <th>{{ trans('server/console.labels.status') }}</th>
-                <td><span class="hl-dot ut-{{ $statusColor }}"></span>{{ $status }}</td>
+                <td><span class="hl-dot hl-{{ $statusColor }}"></span>{{ $status }}</td>
                 <th>{{ trans('server/console.labels.memory') }}</th>
                 <td>{{ $memory }}</td>
             </tr>
